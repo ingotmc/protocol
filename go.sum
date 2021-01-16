@@ -2,6 +2,7 @@ github.com/bearmini/bitstream-go v0.0.0-20190121230027-bec1c9ea0d3c h1:4RL7ENhXV
 github.com/bearmini/bitstream-go v0.0.0-20190121230027-bec1c9ea0d3c/go.mod h1:keOh1QpnRe0nCHGjev5R37jMl0zlLP+3ktETWfa4eik=
 github.com/ingotmc/mc v0.0.1 h1:M2FcSgDMaWZTOCPqV/4lm5XsDEyvTpaWez+ffzIpuio=
 github.com/ingotmc/mc v0.0.1/go.mod h1:iBxLCzcYBEn4+eyIKQzW+9Zp8k2Z5c2zZpF4aFAkHvA=
+github.com/ingotmc/mc v0.0.2-prerefactor.1/go.mod h1:iBxLCzcYBEn4+eyIKQzW+9Zp8k2Z5c2zZpF4aFAkHvA=
 github.com/ingotmc/nbt v0.0.1 h1:qP/vKrrWkw0Q9mXY1WUmIWSvaDDgCXebD1ybYspbYLY=
 github.com/ingotmc/nbt v0.0.1/go.mod h1:U+IINL7lKUZW3dM0jCGBOV0Oy6+ibI8ElBQ9VW9QH1M=
 github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=

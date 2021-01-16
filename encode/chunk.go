@@ -79,45 +79,76 @@ func ChunkData(c mc.Chunk, w io.Writer) error {
 }
 
 func chunkSection(s mc.Section, w io.Writer) error {
+
+	// Block Count
 	blockCount := 0
 	air, _ := mc.GlobalPalette.FindByName("minecraft:air")
 	for _, b := range s {
-		if b.ID == air.DefaultState.ID {
+		if b.ID != air.DefaultState.ID {
 			blockCount++
 		}
 	}
-	palette := []int32{
-		0,
-		1,
-	}
 	Short(int16(blockCount), w)
+
+	palette := []uint16{
+		0,
+		34,
+		9,
+		10,
+		66,
+	}
 	bpb := int(math.Ceil(math.Log2(float64(len(palette)))))
 	if bpb < 4 {
 		bpb = 4
 	}
+
+	// BitsPerBlock
 	UByte(uint8(bpb), w)
+
+	// Palette Length
 	VarInt(int32(len(palette)), w)
+	// Palette
 	for _, id := range palette {
-		VarInt(id, w)
+		VarInt(int32(id), w)
 	}
-	blocks := make([]uint64, 64*bpb)
-	for blockIdx, block := range s {
-		longIdx := blockIdx >> 6
-		max := int(math.Floor(64.0 / float64(bpb)))
-		for i := 0; i < max; i++ {
-			mask := uint8(0xff >> (8 - bpb))
-			for pi, pb := range palette {
-				if pb != block.ID {
-					continue
-				}
-				blocks[longIdx] |= uint64(pi) & uint64(mask) << uint64(bpb * i)
-				break
+
+	numOfLongs := bpb * 4096 / 64
+	// Data Array Length
+	VarInt(int32(numOfLongs), w)
+
+	blocks := make([]uint16, len(s))
+
+	for i, block := range s {
+		for j, pb := range palette {
+			if int32(pb) != block.ID {
+				continue
 			}
+			blocks[i] = uint16(j)
+			break
 		}
 	}
-	VarInt(int32(len(blocks)), w)
-	for _, l := range blocks {
-		Long(int64(l), w)
-	}
+	streamLongsUint16(w, bpb, blocks)
 	return nil
+}
+
+func streamLongsUint16(w io.Writer, n int, data []uint16) {
+	bitIdx := 0
+	l, nL := uint64(0), uint64(0)
+	for _, v := range data {
+		x := uint64(v)
+		l |= x << bitIdx
+		bitIdx += n
+		if bitIdx < 64 {
+			continue
+		}
+		bitIdx %= 64
+		Long(int64(l), w)
+		l = nL
+		nL = 0
+		if bitIdx == 0 {
+			continue
+		}
+		x >>= n - bitIdx
+		l |= x
+	}
 }
